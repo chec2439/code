@@ -1,0 +1,208 @@
+class Aluno:
+    def __init__(self, nome, cpf, peso, altura):
+        self.nome = nome
+        self.cpf = cpf
+        self.peso = peso
+        self.altura = altura
+        self.status = False
+
+
+class Exercicio:
+    def __init__(self, nome, repeticoes, peso):
+        self.nome = nome
+        self.repeticoes = repeticoes
+        self.peso = peso
+
+
+class Academia:
+    def __init__(self):
+        self.alunos = []
+        self.treinos = []
+
+    def cadastrar_aluno(self, nome, cpf, peso, altura):
+        aluno = Aluno(nome, cpf, peso, altura)
+        self.alunos.append(aluno)
+        self.treinos.append([])
+
+    def buscar_aluno(self, nome):
+        for aluno in self.alunos:
+            if aluno.nome == nome:
+                return aluno
+        return None
+
+    def atualizar_cadastro(self, nome, cpf, peso, altura):
+        aluno = self.buscar_aluno(nome)
+        if aluno:
+            aluno.cpf = cpf
+            aluno.peso = peso
+            aluno.altura = altura
+            print("Cadastro atualizado com sucesso.")
+        else:
+            print("Aluno(a) não encontrado.")
+
+    def excluir_aluno(self, nome):
+        aluno = self.buscar_aluno(nome)
+        if aluno:
+            index = self.alunos.index(aluno)
+            self.alunos.remove(aluno)
+            self.treinos.pop(index)
+            print("Aluno(a) removido com sucesso.")
+        else:
+            print("Aluno(a) não encontrado.")
+
+    def gerenciar_treino(self, nome):
+        aluno = self.buscar_aluno(nome)
+        if aluno:
+            treino = self.treinos[self.alunos.index(aluno)]
+            print(f"Treino do aluno(a) {aluno.nome}:")
+            self.exibir_treino(treino)
+            opcao = input(
+                "Escolha uma opção:\n"
+                "1 - Incluir novo exercício\n"
+                "2 - Alterar exercício existente\n"
+                "3 - Excluir exercício\n"
+                "4 - Excluir todos os exercícios\n"
+                "0 - Voltar\n"
+                "Opção: "
+            )
+            if opcao == "1":
+                self.incluir_exercicio(treino)
+                aluno.status = True
+            elif opcao == "2":
+                self.alterar_exercicio(treino)
+            elif opcao == "3":
+                self.excluir_exercicio(treino)
+                if len(treino) == 0:
+                    aluno.status = False
+            elif opcao == "4":
+                self.excluir_todos_exercicios(treino)
+                aluno.status = False
+            elif opcao == "0":
+                return
+            else:
+                print("Opção inválida.")
+
+    def incluir_exercicio(self, treino):
+        nome_exercicio = input("Nome do exercício: ")
+        repeticoes = int(input("Número de repetições: "))
+        peso = float(input("Peso utilizado: "))
+        exercicio = Exercicio(nome_exercicio, repeticoes, peso)
+        if exercicio in treino:
+            print("O exercício já existe no treino.")
+        else:
+            treino.append(exercicio)
+            print("Exercício incluído no treino.")
+
+    def alterar_exercicio(self, treino):
+        nome_exercicio = input("Nome do exercício a ser alterado: ")
+        for exercicio in treino:
+            if exercicio.nome == nome_exercicio:
+                repeticoes = int(input("Novo número de repetições: "))
+                peso = float(input("Novo peso utilizado: "))
+                exercicio.repeticoes = repeticoes
+                exercicio.peso = peso
+                print("Exercício alterado com sucesso.")
+                return
+        print("Exercício não encontrado.")
+
+    def excluir_exercicio(self, treino):
+        nome_exercicio = input("Nome do exercício a ser excluído: ")
+        for exercicio in treino:
+            if exercicio.nome == nome_exercicio:
+                treino.remove(exercicio)
+                print("Exercício excluído do treino.")
+                return
+        print("Exercício não encontrado.")
+
+    def excluir_todos_exercicios(self, treino):
+        treino.clear()
+        print("Todos os exercícios foram excluídos do treino.")
+
+    def exibir_treino(self, treino):
+        if len(treino) > 0:
+            print("Exercícios:")
+            for exercicio in treino:
+                print(
+                    f"- Nome: {exercicio.nome}, Repetições: {exercicio.repeticoes}, Peso: {exercicio.peso}"
+                )
+        else:
+            print("O treino está vazio.")
+
+    def consultar_aluno(self, nome):
+        aluno = self.buscar_aluno(nome)
+        if aluno:
+            print(f"Nome: {aluno.nome}")
+            print(f"CPF: {aluno.cpf}")
+            print(f"Peso: {aluno.peso}")
+            print(f"Altura: {aluno.altura}")
+            print("Treino:")
+            self.exibir_treino(self.treinos[self.alunos.index(aluno)])
+        else:
+            print("Aluno(a) não encontrado.")
+
+    def relatorio_alunos(self, status):
+        if status == "ativos":
+            alunos = [aluno for aluno in self.alunos if aluno.status]
+        elif status == "inativos":
+            alunos = [aluno for aluno in self.alunos if not aluno.status]
+        else:
+            alunos = self.alunos
+        alunos_ordenados = sorted(alunos, key=lambda x: x.nome)
+        for aluno in alunos_ordenados:
+            print(
+                f"Nome: {aluno.nome}, CPF: {aluno.cpf}, Status: {'Ativo' if aluno.status else 'Inativo'}"
+            )
+
+
+academia = Academia()
+while True:
+    print("\nMenu principal:")
+    print("1 - Cadastrar aluno")
+    print("2 - Gerenciar treino")
+    print("3 - Consultar aluno")
+    print("4 - Atualizar cadastro do aluno")
+    print("5 - Excluir aluno")
+    print("6 - Relatório de alunos")
+    print("0 - Sair")
+    opcao_menu = input("Opção: ")
+    if opcao_menu == "1":
+        nome = input("Nome: ")
+        cpf = input("CPF: ")
+        peso = float(input("Peso: "))
+        altura = float(input("Altura: "))
+        academia.cadastrar_aluno(nome, cpf, peso, altura)
+        print("Aluno(a) cadastrado com sucesso.")
+    elif opcao_menu == "2":
+        nome = input("Nome do aluno(a): ")
+        academia.gerenciar_treino(nome)
+    elif opcao_menu == "3":
+        nome = input("Nome do aluno(a): ")
+        academia.consultar_aluno(nome)
+    elif opcao_menu == "4":
+        nome = input("Nome do aluno(a): ")
+        cpf = input("Novo CPF: ")
+        peso = float(input("Novo peso: "))
+        altura = float(input("Nova altura: "))
+        academia.atualizar_cadastro(nome, cpf, peso, altura)
+    elif opcao_menu == "5":
+        nome = input("Nome do aluno(a): ")
+        academia.excluir_aluno(nome)
+    elif opcao_menu == "6":
+        print("Opções de relatório:")
+        print("1 - Todos os alunos(a)")
+        print("2 - Alunos(a) ativos")
+        print("3 - Alunos(a) inativos")
+        opcao_relatorio = input("Opção: ")
+        if opcao_relatorio == "1":
+            academia.relatorio_alunos("todos")
+        elif opcao_relatorio == "2":
+            academia.relatorio_alunos("ativos")
+        elif opcao_relatorio == "3":
+            academia.relatorio_alunos("inativos")
+        else:
+            print("Opção inválida.")
+    elif opcao_menu == "0":
+        print("Até mais")
+        break
+    else:
+        print("Opção inválida.")
